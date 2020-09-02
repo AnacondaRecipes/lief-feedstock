@@ -19,6 +19,7 @@ source:
     fn: lief-{{ version }}.tar.gz
     sha256: 6f30c98a559f137e08b25bcbb376c0259914b33c307b8b901e01ca952241d00a
     patches:
+      - 68b7a6a2f8aecb3a8fd540feb1b5f7bb9b58e00e.patch
       - 0001-python-Only-pass-NODEFAULTLIB-MSVCRT-when-not-BUILD_.patch
       - 0002-Fix-typo-BuildeVersion-BuildVersion-which-may-lead-t.patch
       - 0003-Export-BuildToolVersion.patch
@@ -31,7 +32,7 @@ source:
       - 0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
 build:
-  number: 0
+  number: 1
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
   # Python 2.7 is not supported on Windows
   # lief_easyloggingpp\src\easylogging++.h(327) : fatal error C1189: #error :  "C++0x (or higher) support not detected! (Is `-std=c++11' missing?)
