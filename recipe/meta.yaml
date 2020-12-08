@@ -19,7 +19,6 @@ source:
     fn: lief-{{ version }}.tar.gz
     sha256: 6f30c98a559f137e08b25bcbb376c0259914b33c307b8b901e01ca952241d00a
     patches:
-      - 68b7a6a2f8aecb3a8fd540feb1b5f7bb9b58e00e.patch
       - 0001-python-Only-pass-NODEFAULTLIB-MSVCRT-when-not-BUILD_.patch
       - 0002-Fix-typo-BuildeVersion-BuildVersion-which-may-lead-t.patch
       - 0003-Export-BuildToolVersion.patch
@@ -30,6 +29,7 @@ source:
       # - 0008-Export-parse-in-include-LIEF-ELF-Parser.hpp.patch
       - 0008-Add-_DEBUG-when-CMAKE_BUILD_TYPE-matches-Debug.patch
       - 0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
+      - 0010-Fix-module-entry-point-declaration.patch
 
 build:
   number: 1
