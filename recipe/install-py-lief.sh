@@ -5,7 +5,7 @@ set -x
 declare -a CMAKE_EXTRA_ARGS
 if [[ ${target_platform} =~ linux-* ]]; then
   echo "Nothing special for linux"
-elif [[ ${target_platform} == osx-64 ]]; then
+elif [[ ${target_platform} == osx-* ]]; then
   CMAKE_EXTRA_ARGS+=(-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT})
 else
   echo "target_platform not known: ${target_platform}"
