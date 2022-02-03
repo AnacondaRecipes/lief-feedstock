@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare -a CMAKE_EXTRA_ARGS
-if [[ ${target_platform} == osx-64 ]]; then
+if [[ ${target_platform} == osx-* ]]; then
   CMAKE_EXTRA_ARGS+=(-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT})
 elif [[ ${target_platform} == linux-ppc64le ]]; then
   CMAKE_EXTRA_ARGS+=(-DLIEF_LOGGING=OFF)

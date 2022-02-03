@@ -59,8 +59,8 @@ if [[ ! $? ]]; then
   exit 1
 fi
 ext_suffix="$( ${PYTHON} -c 'from sysconfig import get_config_var as get; print(get("EXT_SUFFIX") or get("SO"))' )"
-mv api/python/lief.so ${SP_DIR}/lief${ext_suffix}
-if [[ ${target_platform} == osx-64 ]]; then
+mv api/python/lief.f${ext_suffix} ${SP_DIR}/lief${ext_suffix}
+if [[ ${target_platform} == osx-* ]]; then
   ${INSTALL_NAME_TOOL:-install_name_tool} -id @rpath/_pylief${ext_suffix} ${SP_DIR}/lief${ext_suffix}
 fi
 
