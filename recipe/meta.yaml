@@ -1,4 +1,6 @@
-{% set version = "0.10.1" %}
+{% set version = "0.11.5" %}
+{% set sha_hash = "6d6d57304a56850958e4ce54f3da2ea2b9eb856ccbab61c6cde9cba15d7c9da5" %}
+{% set build_number = "0" %}
 
 {% set debug = os.environ.get('PY_INTERP_DEBUG', '') %}
 {% if debug != '' %}
@@ -17,7 +19,7 @@ package:
 source:
   - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
     fn: lief-{{ version }}.tar.gz
-    sha256: 6f30c98a559f137e08b25bcbb376c0259914b33c307b8b901e01ca952241d00a
+    sha256: {{ sha_hash }}
     patches:
       - 0001-python-Only-pass-NODEFAULTLIB-MSVCRT-when-not-BUILD_.patch
       - 0002-Fix-typo-BuildeVersion-BuildVersion-which-may-lead-t.patch
@@ -32,7 +34,7 @@ source:
       - 0010-Fix-module-entry-point-declaration.patch
 
 build:
-  number: 2
+  number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
   # Python 2.7 is not supported on Windows
   # lief_easyloggingpp\src\easylogging++.h(327) : fatal error C1189: #error :  "C++0x (or higher) support not detected! (Is `-std=c++11' missing?)
@@ -44,8 +46,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config            # [not win]
-    - patch  # [not win]
-    - m2-patch  # [win]
+    - patch        # [not win]
+    - m2-patch     # [win]
     - m2-gcc-libs  # [win]
     - cmake
     - ninja
@@ -124,6 +126,7 @@ about:
     LIEF attempts to fill this void.
   doc_url: https://lief.quarkslab.com/doc/stable/index.html
   doc_source_url: https://github.com/lief-project/LIEF/tree/master/doc
+  dev_url: https://github.com/lief-project/LIEF
 
 extra:
   recipe-maintainers:
