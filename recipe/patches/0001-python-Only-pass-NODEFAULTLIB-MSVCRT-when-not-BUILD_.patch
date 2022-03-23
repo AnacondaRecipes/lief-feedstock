@@ -1,0 +1,20 @@
+diff --git a/api/python/CMakeLists.txt b/api/python/CMakeLists.txt
+index dd23f6cf..7ca16768 100644
+--- a/api/python/CMakeLists.txt
++++ b/api/python/CMakeLists.txt
+@@ -132,7 +132,9 @@ if (MSVC)
+   if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+     target_compile_options(pyLIEF PUBLIC /FIiso646.h)
+   endif()
+-  set_property(TARGET pyLIEF PROPERTY LINK_FLAGS /NODEFAULTLIB:MSVCRT)
++  if (NOT BUILD_SHARED_LIBS)
++    set_property(TARGET pyLIEF PROPERTY LINK_FLAGS /NODEFAULTLIB:MSVCRT)
++  endif (NOT BUILD_SHARED_LIBS)
+ endif()
+ 
+ set_target_properties(pyLIEF PROPERTIES PYTHON_VERSION ${PYTHON_VERSION})
+@@ -202,4 +204,3 @@ if (MSVC)
+       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pyLIEF> ${CMAKE_CURRENT_BINARY_DIR}
+   )
+ endif()
+-
