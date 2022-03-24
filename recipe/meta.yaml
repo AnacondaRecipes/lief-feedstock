@@ -31,8 +31,6 @@ build:
   number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
   skip: True  # [win and py<30]
-  missing_dso_whitelist:  # [s390x]
-    - $RPATH/ld64.so.1    # [s390x] Known defect.
 
 requirements:
   build:
@@ -56,6 +54,8 @@ outputs:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
       ignore_run_exports:
         - python
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x] Known defect.
     requirements:
       build:
         - ccache
