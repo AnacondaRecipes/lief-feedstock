@@ -11,7 +11,7 @@ index 93d067fb..cc17cf5a 100644
 +#ifdef BOOST_NO_EXCEPTIONS
 +// Boost infers from the defines/environment that boost::throw_exception will be user-defined, so define it here:
 +namespace boost {
-+throw_exception(const std::exception& error) {
++void throw_exception(const std::exception& error) {
 +    throw error; // Alternate option: std::abort();
 +}
 +} // namespace boost
