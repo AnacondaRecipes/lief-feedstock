@@ -42,7 +42,7 @@ set UNIX_SRC_DIR=%SRC_DIR:\=/%
 :: (C:\opt\b\lief-win\_build_env) (base) C:\opt\b\lief-win\work\build-pylief>C:\opt\b\lief-win\_h_env\python.exe -c "import lief"
 :: Fatal Python error: _PyInterpreterState_Get(): no current thread state
 :: Python runtime state: initialized
-:: 
+::
 :: Current thread 0x000052b4 (most recent call first):
 ::   File "<frozen importlib._bootstrap>", line 219 in _call_with_frames_removed
 ::   File "<frozen importlib._bootstrap_external>", line 1101 in create_module
@@ -101,7 +101,7 @@ mkdir api\python\lief
 ninja -v pyLIEF
 
 if "%DEBUG_C%" == "yes" (
-  patch -p1<%RECIPE_DIR%\pybind11-MSVC-allow-debug-python.patch
+  patch -p1<%RECIPE_DIR%\patches\pybind11-MSVC-allow-debug-python.patch
   rmdir /s /q api\python\CMakeFiles
   rmdir /s /q build-py\api\python\lief_pybind11-prefix\src\lief_pybind11-build
   rmdir /s /q build-py\api\python\lief_pybind11-prefix\src\lief_pybind11-stamp
