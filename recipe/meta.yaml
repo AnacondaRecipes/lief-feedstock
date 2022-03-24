@@ -90,6 +90,8 @@ outputs:
       # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x] Known defect.
     requirements:
       build:
         - ccache
