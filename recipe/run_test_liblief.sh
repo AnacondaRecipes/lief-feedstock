@@ -2,8 +2,11 @@
 
 pushd tests
 
-  export CONDA_BUILD_SYSROOT=/opt/MacOSX10.9.sdk
-  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug .
+  #export CONDA_BUILD_SYSROOT=/opt/MacOSX10.9.sdk
+  cmake . -G "Ninja" \
+        -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
+        -DCMAKE_BUILD_TYPE=Debug
+
   ninja
 
   # This MachO object has no DynamicSymbolCommand, testing for bug fixed in PR:
