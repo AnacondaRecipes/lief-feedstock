@@ -1,18 +1,27 @@
-diff --git a/src/errors.cpp b/src/errors.cpp
-index 93d067fb..cc17cf5a 100644
---- a/src/errors.cpp
-+++ b/src/errors.cpp
-@@ -45,3 +45,13 @@ const std::error_category& lief_error_category() {
- LIEF::error_t LIEF::return_error(lief_errors e) {
-   return boost::leaf::new_error(e);
- }
+diff --git a/src/logging.cpp b/src/logging.cpp
+index 3dd9200b..755ac18a 100644
+--- a/src/logging.cpp
++++ b/src/logging.cpp
+@@ -22,6 +22,16 @@
+ #include "spdlog/spdlog.h"
+ #include "spdlog/sinks/stdout_color_sinks.h"
+ 
 +
-+
-+#ifdef BOOST_NO_EXCEPTIONS
-+// Boost infers from the defines/environment that boost::throw_exception will be user-defined, so define it here:
++// Boost infers from the defines/environment that boost::throw_exception is user-defined, so define it here:
 +namespace boost {
 +void throw_exception(const std::exception& error) {
-+    throw error; // Alternate option: std::abort();
++  throw error;
 +}
 +} // namespace boost
-+#endif
++
++
++
+ namespace LIEF {
+ namespace logging {
+ 
+@@ -147,5 +157,3 @@ void set_level(LOGGING_LEVEL level) {
+ 
+ }
+ }
+-
+-
