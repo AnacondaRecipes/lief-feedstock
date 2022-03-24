@@ -25,6 +25,7 @@ source:
       - patches/0006-Call-the-C-DLL-libLIEF.dll-so-it-does-not-clash-with.patch
       - patches/0007-Add-LIEFOptions-for-BUILD_STATIC_LIBS-and-BUILD_SHAR.patch
       - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
+      - patches/boost-throw-exception-fix.patch  # [win] Boost no throw fix/workaround.
 
 build:
   number: {{ build_number }}

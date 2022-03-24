@@ -1,0 +1,18 @@
+diff --git a/src/errors.cpp b/src/errors.cpp
+index 93d067fb..cc17cf5a 100644
+--- a/src/errors.cpp
++++ b/src/errors.cpp
+@@ -45,3 +45,13 @@ const std::error_category& lief_error_category() {
+ LIEF::error_t LIEF::return_error(lief_errors e) {
+   return boost::leaf::new_error(e);
+ }
++
++
++#ifdef BOOST_NO_EXCEPTIONS
++// Boost infers from the defines/environment that boost::throw_exception will be user-defined, so define it here:
++namespace boost {
++throw_exception(const std::exception& error) {
++    throw error; // Alternate option: std::abort();
++}
++} // namespace boost
++#endif
