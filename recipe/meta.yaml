@@ -22,7 +22,6 @@ source:
     sha256: {{ sha_hash }}
     patches:
       - patches/CMakeLists.txt.patch  # [win]
-      - patches/0007-Add-LIEFOptions-for-BUILD_STATIC_LIBS-and-BUILD_SHAR.patch
       - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
 build:
@@ -42,8 +41,8 @@ requirements:
 
 outputs:
   - name: py-lief
-    script: install-py-lief.sh   # [unix]
-    script: install-py-lief.bat  # [win]
+    script: build-py-lief.sh  # [unix]
+    script: bld-py-lief.bat   # [win]
     build:
       # string: py{{ ''.join(python.split('.')[0:2]) }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
@@ -84,8 +83,8 @@ outputs:
         - pip check
 
   - name: liblief
-    script: install-liblief.sh        # [unix]
-    script: install-liblief.bat       # [win]
+    script: build-liblief.sh  # [unix]
+    script: bld-liblief.bat   # [win]
     build:
       # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
