@@ -40,6 +40,32 @@ requirements:
     - ninja
 
 outputs:
+  - name: liblief
+    script: build-liblief.sh  # [unix]
+    script: bld-liblief.bat   # [win]
+    build:
+      # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
+      run_exports:
+        - {{ pin_subpackage('liblief', max_pin='x.x') }}
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x] Known defect.
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - pkg-config            # [not win]
+        - cmake
+        - ninja
+    test:
+      files:
+        - tests
+      script: run_test_liblief.sh
+      requires:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - ninja
+
   - name: py-lief
     script: build-py-lief.sh  # [unix]
     script: bld-py-lief.bat   # [win]
@@ -82,32 +108,6 @@ outputs:
         - lief
       commands:
         - pip check
-
-  - name: liblief
-    script: build-liblief.sh  # [unix]
-    script: bld-liblief.bat   # [win]
-    build:
-      # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
-      run_exports:
-        - {{ pin_subpackage('liblief', max_pin='x.x') }}
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x] Known defect.
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - pkg-config            # [not win]
-        - cmake
-        - ninja
-    test:
-      files:
-        - tests
-      script: run_test_liblief.sh
-      requires:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - cmake
-        - ninja
 
 about:
   home: https://lief.quarkslab.com/
