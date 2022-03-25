@@ -37,12 +37,13 @@ cmake .. -LAH -G "Ninja"  \
   \
   -DLIEF_PYTHON_API=ON  \
   -DLIEF_INSTALL_PYTHON=ON  \
-  -DPYTHON_EXECUTABLE="${PYTHON}"  \
+  \
   -DPYTHON_INCLUDE_DIR:PATH=$(${PYTHON} -c 'from sysconfig import get_paths; print(get_paths()["include"])')  \
-  -DPYTHON_LIBRARIES="${PREFIX}"/lib/libpython${PY_VER}.dylib  \
-  -DPYTHON_LIBRARY="${PREFIX}"/lib/libpython${PY_VER}.dylib  \
+  -DPYTHON_LIBRARIES="${PREFIX}"/lib/libpython${PY_VER}.${SHLIB_EXT}  \
+  -DPYTHON_LIBRARY="${PREFIX}"/lib/libpython${PY_VER}.${SHLIB_EXT}  \
   -DPYTHON_EXECUTABLE="${PREFIX}"/bin/python  \
   -DPYTHON_VERSION=${PY_VER}  \
+  \
   "${CMAKE_EXTRA_ARGS[@]}"
 
 if [[ ! $? ]]; then
