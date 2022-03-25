@@ -52,7 +52,8 @@ outputs:
       run_exports:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
       ignore_run_exports:
-        - python
+        - pytho
+        - liblief
       missing_dso_whitelist:  # [s390x]
         - $RPATH/ld64.so.1    # [s390x] Known defect.
         - $RPATH/LIEF.dll     # [win]
