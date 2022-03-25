@@ -21,7 +21,7 @@ source:
     fn: lief-{{ version }}.tar.gz
     sha256: {{ sha_hash }}
     patches:
-      - patches/0006-Call-the-C-DLL-libLIEF.dll-so-it-does-not-clash-with.patch  # [win]
+      - patches/CMakeLists.txt.patch  # [win]
       - patches/0007-Add-LIEFOptions-for-BUILD_STATIC_LIBS-and-BUILD_SHAR.patch
       - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
