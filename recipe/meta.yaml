@@ -29,7 +29,7 @@ source:
 build:
   number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
-  skip: True  # [win and py<30]
+  skip: True  # [py<36]
 
 requirements:
   build:
@@ -59,7 +59,6 @@ outputs:
         - $RPATH/LIEF.dll     # [win]
     requirements:
       build:
-        - ccache
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
@@ -72,8 +71,9 @@ outputs:
         - {{ pin_subpackage('liblief', exact=True) }}
         # - python {{python}}* *{{variant}}
         - python
-        - setuptools
+        - setuptools >=31.0.0
         - pip
+        - wheel
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
         # - python {{python}}* *{{variant}}
@@ -81,8 +81,11 @@ outputs:
     test:
       requires:
         - {{ compiler('cxx') }}
+        - pip
       imports:
         - lief
+      commands:
+        - pip check
 
   - name: liblief
     script: install-liblief.sh        # [unix]
@@ -95,7 +98,6 @@ outputs:
         - $RPATH/ld64.so.1    # [s390x] Known defect.
     requirements:
       build:
-        - ccache
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
