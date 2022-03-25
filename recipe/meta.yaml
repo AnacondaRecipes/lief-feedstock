@@ -38,6 +38,7 @@ requirements:
     - m2-gcc-libs  # [win]
     - cmake
     - ninja
+    - git
 
 outputs:
   - name: py-lief
