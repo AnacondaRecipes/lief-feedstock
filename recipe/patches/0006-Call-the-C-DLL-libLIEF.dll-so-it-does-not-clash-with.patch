@@ -1,19 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5c6a1ccb..508cafa4 100644
+index 5c6a1ccb..6e05b334 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -481,6 +481,14 @@ if(LIEF_COVERAGE)
+@@ -481,7 +481,11 @@ if(LIEF_COVERAGE)
    target_link_libraries(LIB_LIEF gcov)
  endif()
  
-+# Since the Python extension module will be called lief.pyd, we cannot have the C++ Library
-+# called LIEF.dll since Windows will not load both.
-+if(WIN32 AND BUILD_SHARED_LIBS)
-+  set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME libLIEF)
-+else()
-+  set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF)
-+endif()
-+
- set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
+-set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
++# Add `lib` prefix to name to avoid collision with `lief.pyd`.
++set_target_properties(LIB_LIEF PROPERTIES
++  OUTPUT_NAME libLIEF
++  CLEAN_DIRECT_OUTPUT 1
++)
  
  
+ # Set a default build type if none was specified

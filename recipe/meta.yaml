@@ -21,22 +21,19 @@ source:
     fn: lief-{{ version }}.tar.gz
     sha256: {{ sha_hash }}
     patches:
-      - patches/0001-python-Only-pass-NODEFAULTLIB-MSVCRT-when-not-BUILD_.patch
-      - patches/0006-Call-the-C-DLL-libLIEF.dll-so-it-does-not-clash-with.patch
+      - patches/0006-Call-the-C-DLL-libLIEF.dll-so-it-does-not-clash-with.patch  # [win]
       - patches/0007-Add-LIEFOptions-for-BUILD_STATIC_LIBS-and-BUILD_SHAR.patch
       - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
 build:
   number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
-  skip: True  # [win and py<30]
 
 requirements:
   build:
-    - ccache
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config            # [not win]
+    - pkg-config   # [not win]
     - patch        # [not win]
     - m2-patch     # [win]
     - m2-gcc-libs  # [win]
@@ -70,8 +67,9 @@ outputs:
         - {{ pin_subpackage('liblief', exact=True) }}
         # - python {{python}}* *{{variant}}
         - python
-        - setuptools
+        - setuptools >=31.0.0
         - pip
+        - wheel
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
         # - python {{python}}* *{{variant}}
@@ -79,8 +77,11 @@ outputs:
     test:
       requires:
         - {{ compiler('cxx') }}
+        - pip
       imports:
         - lief
+      commands:
+        - pip check
 
   - name: liblief
     script: install-liblief.sh        # [unix]
@@ -93,7 +94,6 @@ outputs:
         - $RPATH/ld64.so.1    # [s390x] Known defect.
     requirements:
       build:
-        - ccache
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
