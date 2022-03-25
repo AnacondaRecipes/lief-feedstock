@@ -38,7 +38,6 @@ requirements:
     - m2-gcc-libs  # [win]
     - cmake
     - ninja
-    - git
 
 outputs:
   - name: py-lief
@@ -63,6 +62,7 @@ outputs:
         - m2-gcc-libs  # [win]
         - cmake
         - ninja
+        - git
       host:
         - {{ pin_subpackage('liblief', exact=True) }}
         # - python {{python}}* *{{variant}}
