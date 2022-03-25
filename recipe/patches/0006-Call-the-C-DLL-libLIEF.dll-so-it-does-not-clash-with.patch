@@ -1,13 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5c6a1ccb..6e05b334 100644
+index 5c6a1ccb..9f4c08ae 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -481,7 +481,11 @@ if(LIEF_COVERAGE)
+@@ -481,7 +481,13 @@ if(LIEF_COVERAGE)
    target_link_libraries(LIB_LIEF gcov)
  endif()
  
 -set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
-+# Add `lib` prefix to name to avoid collision with `lief.pyd`.
++#
++# PATCH NOTE: Add `lib` prefix to name to avoid collision with `lief.pyd`.
++#
 +set_target_properties(LIB_LIEF PROPERTIES
 +  OUTPUT_NAME libLIEF
 +  CLEAN_DIRECT_OUTPUT 1
@@ -15,3 +17,19 @@ index 5c6a1ccb..6e05b334 100644
  
  
  # Set a default build type if none was specified
+@@ -580,11 +586,14 @@ endif()
+ # Installation
+ # ======================
+ 
++#
++# PATCH NOTE: Ensure .dll is in the path.
++#
+ install(
+   TARGETS LIB_LIEF
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+-  RUNTIME DESTINATION lib COMPONENT libraries)
++  RUNTIME DESTINATION bin COMPONENT libraries)
+ 
+ install(
+   DIRECTORY ${LIEF_PUBLIC_INCLUDE_DIR}
