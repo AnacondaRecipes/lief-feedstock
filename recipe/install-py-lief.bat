@@ -13,14 +13,6 @@ for /F "tokens=1,2 delims=. " %%a in ("%PY_VER%") do (
    set "PY_MINOR=%%b"
 )
 
-if "%DEBUG_C%" == "yes" (
-  set BUILD_TYPE=Debug
-  set DEBUG_SUFFIX=_d
-) else (
-  set BUILD_TYPE=Release
-  set DEBUG_SUFFIX=
-)
-
 :: mkdir build-%PY_VER%
 :: pushd build-%PY_VER%
 pushd build
@@ -65,17 +57,13 @@ echo Top of install-py-lief.bat: LIB=%LIB%
 echo Top of install-py-lief.bat: INCLUDE=%INCLUDE%
 echo Top of install-py-lief.bat: LIBRARY_LIB=%LIBRARY_LIB%
 
-set SHARED_BUILD=ON
-set STATIC_BUILD=OFF
-
 set CC=cl.exe
 set CXX=cl.exe
 
-cmake -LAH -G "Ninja"  ^
-    -DCMAKE_BUILD_TYPE="%BUILD_TYPE%"  ^
+cmake .. -LAH -G "Ninja"  ^
     -DCMAKE_INSTALL_PREFIX=%PREFIX%  ^
-    -DBUILD_SHARED_LIBS:BOOL=%SHARED_BUILD%  ^
-    -DBUILD_STATIC_LIBS:BOOL=%STATIC_BUILD%  ^
+    -DBUILD_SHARED_LIBS:BOOL=ON  ^
+    -DBUILD_STATIC_LIBS:BOOL=OFF  ^
     -DLIEF_PYTHON_API=ON  ^
     -DLIEF_DISABLE_FROZEN=OFF  ^
     -DCMAKE_SKIP_RPATH=ON  ^
@@ -88,7 +76,8 @@ cmake -LAH -G "Ninja"  ^
     -DCMAKE_VERBOSE_MAKEFILE=ON  ^
     -DCMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS=OFF  ^
     -DCMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS=OFF  ^
-    ..
+    -DCMAKE_BUILD_TYPE=Release
+
 if %errorlevel% neq 0 exit /b 1
 
 :: If we do not create this directory, then a cmake copy command will copy a pyd to a file
@@ -100,14 +89,6 @@ mkdir api\python\lief
 :: Python.h. We undo that.
 ninja -v pyLIEF
 
-if "%DEBUG_C%" == "yes" (
-  patch -p1<%RECIPE_DIR%\patches\pybind11-MSVC-allow-debug-python.patch
-  rmdir /s /q api\python\CMakeFiles
-  rmdir /s /q build-py\api\python\lief_pybind11-prefix\src\lief_pybind11-build
-  rmdir /s /q build-py\api\python\lief_pybind11-prefix\src\lief_pybind11-stamp
-  rmdir /s /q build-py\api\python\lief_pybind11-prefix\tmp
-  ninja -v pyLIEF
-)
 
 ninja -v install
 
@@ -116,13 +97,9 @@ pushd api\python
   :: We may want to have our own dummy setup.py so we get a dist-info folder. It would
   :: be nice to use LIEF's setup.py but it places too many constraints on the build.
   :: %PYTHON% setup.py install --single-version-externally-managed --record=record.txt
-  if "%DEBUG_C%" == "yes" (
-    copy lief\lief.pyd %SP_DIR%\lief_d.pyd
-    if exist lief.pdb copy lief.pdb %SP_DIR%\lief_d.pdb
-  ) else (
-    copy lief\lief.pyd %SP_DIR%\lief.pyd
-    if exist lief.pdb copy lief.pdb %SP_DIR%\lief.pdb
-  )
+  copy lief\lief.pyd %SP_DIR%\lief.pyd
+  if exist lief.pdb copy lief.pdb %SP_DIR%\lief.pdb
+
 popd
 
 :: When pywin32 (or something else) modifies PATH in funny ways we can end up with conda run

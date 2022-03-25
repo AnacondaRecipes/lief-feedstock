@@ -1,12 +1,6 @@
 @echo ON
 setlocal enabledelayedexpansion
 
-if "%DEBUG_C%" == "yes" (
-  set BUILD_TYPE=Debug
-) else (
-  set BUILD_TYPE=Release
-)
-
 :: All builds done in a subdir so CMake caches are not found next time.
 mkdir build
 pushd build
@@ -28,8 +22,7 @@ set UNIX_SRC_DIR=%SRC_DIR:\=/%
 set CC=cl.exe
 set CXX=cl.exe
 
-cmake -LAH -G "Ninja"  ^
-    -DCMAKE_BUILD_TYPE="%BUILD_TYPE%"  ^
+cmake .. -LAH -G "Ninja"  ^
     -DBUILD_SHARED_LIBS:BOOL=ON  ^
     -DLIEF_PYTHON_API=OFF  ^
     -DCMAKE_CXX_FLAGS="%CXXFLAGS% /wd4359 /EHsc"  ^
@@ -38,5 +31,6 @@ cmake -LAH -G "Ninja"  ^
     -DCMAKE_SKIP_RPATH=ON  ^
     -DCMAKE_VERBOSE_MAKEFILE=ON  ^
     -DCMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS=OFF  ^
-    ..
+    -DCMAKE_BUILD_TYPE=Release
+
 if %errorlevel% neq 0 exit /b 1
