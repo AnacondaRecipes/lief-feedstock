@@ -37,8 +37,8 @@ ninja || exit 1
 
 
 # Perform tests.
-echo "Testing..."
-echo "   ...currently disabled."
+echo "Testing is currently disabled."
+#  echo "Testing..."
 #  ninja test || exit 1
 #  path_to/test || exit 1
 #  ctest -VV --output-on-failure || exit 1
