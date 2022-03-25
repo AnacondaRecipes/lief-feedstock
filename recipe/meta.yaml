@@ -33,10 +33,10 @@ build:
 
 requirements:
   build:
-    - ccache
+    - ccache       # [not win]  Seems to not work correctly on Windows
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config            # [not win]
+    - pkg-config   # [not win]
     - patch        # [not win]
     - m2-patch     # [win]
     - m2-gcc-libs  # [win]
