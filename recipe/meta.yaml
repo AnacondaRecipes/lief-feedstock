@@ -56,7 +56,7 @@ outputs:
         - pkg-config            # [not win]
         - cmake
         - ninja
-        - git
+        # - git  # git is necessary for test.
     test:
       files:
         - tests

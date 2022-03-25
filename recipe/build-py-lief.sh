@@ -10,9 +10,10 @@ echo "Generating the build files."
 
 declare -a CMAKE_EXTRA_ARGS
 if [[ ${target_platform} =~ linux-* ]]; then
-  echo "Nothing special for linux"
+    echo "Nothing special for linux"
 elif [[ ${target_platform} == osx-* ]]; then
-  CMAKE_EXTRA_ARGS+=(-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT})
+    CMAKE_EXTRA_ARGS+=(-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT})
+    CMAKE_EXTRA_ARGS+=(-DCMAKE_SKIP_RPATH=ON)
 else
   echo "target_platform not known: ${target_platform}"
   exit 1
