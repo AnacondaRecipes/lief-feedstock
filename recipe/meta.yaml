@@ -27,6 +27,7 @@ source:
 build:
   number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
+  skip: true  # [py<36]
 
 requirements:
   build:
