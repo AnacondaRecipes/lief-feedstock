@@ -1,4 +1,6 @@
-{% set version = "0.10.1" %}
+{% set version = "0.11.5" %}
+{% set sha_hash = "6d6d57304a56850958e4ce54f3da2ea2b9eb856ccbab61c6cde9cba15d7c9da5" %}
+{% set build_number = "0" %}
 
 {% set debug = os.environ.get('PY_INTERP_DEBUG', '') %}
 {% if debug != '' %}
@@ -17,91 +19,45 @@ package:
 source:
   - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
     fn: lief-{{ version }}.tar.gz
-    sha256: 6f30c98a559f137e08b25bcbb376c0259914b33c307b8b901e01ca952241d00a
+    sha256: {{ sha_hash }}
     patches:
-      - 0001-python-Only-pass-NODEFAULTLIB-MSVCRT-when-not-BUILD_.patch
-      - 0002-Fix-typo-BuildeVersion-BuildVersion-which-may-lead-t.patch
-      - 0003-Export-BuildToolVersion.patch
-      - 0004-Do-not-annotate-static-ELF-Parser-s-parse-function-a.patch
-      - 0005-Update-LIEF_VERSION_PATCH-to-1-for-v0.10.1.patch
-      - 0006-Call-the-C-DLL-libLIEF.dll-so-it-does-not-clash-with.patch
-      - 0007-Add-LIEFOptions-for-BUILD_STATIC_LIBS-and-BUILD_SHAR.patch
-      # - 0008-Export-parse-in-include-LIEF-ELF-Parser.hpp.patch
-      - 0008-Add-_DEBUG-when-CMAKE_BUILD_TYPE-matches-Debug.patch
-      - 0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
-      - 0010-Fix-module-entry-point-declaration.patch
+      - patches/CMakeLists.txt.patch  # [win]
+      - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
 build:
-  number: 1
+  number: {{ build_number }}
   string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
-  # Python 2.7 is not supported on Windows
-  # lief_easyloggingpp\src\easylogging++.h(327) : fatal error C1189: #error :  "C++0x (or higher) support not detected! (Is `-std=c++11' missing?)
-  skip: True  # [win and py<30]
+  skip: true  # [py<36]
 
 requirements:
   build:
-    - ccache
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config            # [not win]
-    - patch  # [not win]
-    - m2-patch  # [win]
+    - pkg-config
+    - patch        # [not win]
+    - m2-patch     # [win]
     - m2-gcc-libs  # [win]
     - cmake
     - ninja
 
 outputs:
-  - name: py-lief
-    script: install-py-lief.sh   # [unix]
-    script: install-py-lief.bat  # [win]
-    build:
-      # string: py{{ ''.join(python.split('.')[0:2]) }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
-      run_exports:
-        - {{ pin_subpackage('py-lief', max_pin='x.x') }}
-      ignore_run_exports:
-        - python
-    requirements:
-      build:
-        - ccache
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - pkg-config            # [not win]
-        # When making a debug build on Windows, we need to patch CMake downloaded pybind11. Sorry.
-        - m2-patch  # [win]
-        - m2-gcc-libs  # [win]
-        - cmake
-        - ninja
-      host:
-        - {{ pin_subpackage('liblief', exact=True) }}
-        # - python {{python}}* *{{variant}}
-        - python
-        - setuptools
-        - pip
-      run:
-        - {{ pin_subpackage('liblief', exact=True) }}
-        # - python {{python}}* *{{variant}}
-        - python
-    test:
-      requires:
-        - {{ compiler('cxx') }}
-      imports:
-        - lief
-
   - name: liblief
-    script: install-liblief.sh        # [unix]
-    script: install-liblief.bat       # [win]
+    script: build-liblief.sh  # [unix]
+    script: bld-liblief.bat   # [win]
     build:
       # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
-        - ccache
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        - pkg-config            # [not win]
+        - pkg-config
         - cmake
         - ninja
+        # - git  # git is necessary for test.
     test:
       files:
         - tests
@@ -111,6 +67,48 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
+
+  - name: py-lief
+    script: build-py-lief.sh  # [unix]
+    script: bld-py-lief.bat   # [win]
+    build:
+      # string: py{{ ''.join(python.split('.')[0:2]) }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
+      run_exports:
+        - {{ pin_subpackage('py-lief', max_pin='x.x') }}
+      ignore_run_exports:
+        - python
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x] Known defect.
+    requirements:
+      build:
+        - ccache
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - pkg-config
+        # When making a debug build on Windows, we need to patch CMake downloaded pybind11. Sorry.
+        - m2-patch  # [win]
+        - m2-gcc-libs  # [win]
+        - cmake
+        - ninja
+      host:
+        - {{ pin_subpackage('liblief', exact=True) }}
+        # - python {{python}}* *{{variant}}
+        - python
+        - setuptools >=31.0.0
+        - pip
+        - wheel
+      run:
+        - {{ pin_subpackage('liblief', exact=True) }}
+        # - python {{python}}* *{{variant}}
+        - python
+    test:
+      requires:
+        - {{ compiler('cxx') }}
+        - pip
+      imports:
+        - lief
+      commands:
+        - pip check
 
 about:
   home: https://lief.quarkslab.com/
@@ -124,6 +122,7 @@ about:
     LIEF attempts to fill this void.
   doc_url: https://lief.quarkslab.com/doc/stable/index.html
   doc_source_url: https://github.com/lief-project/LIEF/tree/master/doc
+  dev_url: https://github.com/lief-project/LIEF
 
 extra:
   recipe-maintainers:
