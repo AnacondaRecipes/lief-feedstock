@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index eadac9a6..e1b81513 100644
+index eadac9a6..14cda2f8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -575,8 +575,10 @@ if(LIEF_COVERAGE)
@@ -15,3 +15,20 @@ index eadac9a6..e1b81513 100644
  
  # Set a default build type if none was specified
  if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+@@ -688,12 +690,15 @@ else()
+     endif()
+ endif()
+ 
++#
++# PATCH NOTE: Ensure .dll is in the path.
++#
+ install(
+   TARGETS LIB_LIEF lief_spdlog
+   EXPORT LIEFExport
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-  RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT libraries
+   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ install(
