@@ -1,35 +1,34 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5c6a1ccb..9f4c08ae 100644
+index eadac9a6..14cda2f8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -481,7 +481,13 @@ if(LIEF_COVERAGE)
+@@ -575,8 +575,10 @@ if(LIEF_COVERAGE)
    target_link_libraries(LIB_LIEF gcov)
  endif()
  
--set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
+-set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME LIEF EXPORT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
+-
 +#
 +# PATCH NOTE: Add `lib` prefix to name to avoid collision with `lief.pyd`.
 +#
-+set_target_properties(LIB_LIEF PROPERTIES
-+  OUTPUT_NAME libLIEF
-+  CLEAN_DIRECT_OUTPUT 1
-+)
- 
++set_target_properties(LIB_LIEF PROPERTIES OUTPUT_NAME libLIEF EXPORT_NAME LIEF CLEAN_DIRECT_OUTPUT 1)
  
  # Set a default build type if none was specified
-@@ -580,11 +586,14 @@ endif()
- # Installation
- # ======================
+ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+@@ -688,12 +690,15 @@ else()
+     endif()
+ endif()
  
 +#
 +# PATCH NOTE: Ensure .dll is in the path.
 +#
  install(
-   TARGETS LIB_LIEF
-   ARCHIVE DESTINATION lib
-   LIBRARY DESTINATION lib
--  RUNTIME DESTINATION lib COMPONENT libraries)
-+  RUNTIME DESTINATION bin COMPONENT libraries)
+   TARGETS LIB_LIEF lief_spdlog
+   EXPORT LIEFExport
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-  RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT libraries
+   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
  
  install(
-   DIRECTORY ${LIEF_PUBLIC_INCLUDE_DIR}

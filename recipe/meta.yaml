@@ -1,16 +1,4 @@
-{% set version = "0.11.5" %}
-{% set sha_hash = "6d6d57304a56850958e4ce54f3da2ea2b9eb856ccbab61c6cde9cba15d7c9da5" %}
-{% set build_number = "1" %}
-
-{% set debug = os.environ.get('PY_INTERP_DEBUG', '') %}
-{% if debug != '' %}
-  {% set debug = "_dbg" %}
-{% endif %}
-{% if debug != '' %}
-  {% set variant = "cpython_dbg" %}
-{% else %}
-  {% set variant = "cpython" %}
-{% endif %}
+{% set version = "0.12.3" %}
 
 package:
   name: lief
@@ -19,14 +7,12 @@ package:
 source:
   - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
     fn: lief-{{ version }}.tar.gz
-    sha256: {{ sha_hash }}
-    patches:
+    sha256: 762925ad2eed642a6e7ef2cc899bcd3e93a40a2ce1dd2391d9b9ecadfe6438cf
+    patches:  # [win]
       - patches/CMakeLists.txt.patch  # [win]
-      - patches/0009-Avoid-deprecated-get_config_var-SO-use-EXT_SUFFIX-lo.patch
 
 build:
-  number: {{ build_number }}
-  string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
+  number: 0
   skip: true  # [py<36]
 
 requirements:
@@ -34,7 +20,6 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config
-    - patch        # [not win]
     - m2-patch     # [win]
     - m2-gcc-libs  # [win]
     - cmake
@@ -45,7 +30,6 @@ outputs:
     script: build-liblief.sh  # [unix]
     script: bld-liblief.bat   # [win]
     build:
-      # string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
       missing_dso_whitelist:  # [s390x]
@@ -57,7 +41,6 @@ outputs:
         - pkg-config
         - cmake
         - ninja
-        # - git  # git is necessary for test.
     test:
       files:
         - tests
@@ -72,7 +55,6 @@ outputs:
     script: build-py-lief.sh  # [unix]
     script: bld-py-lief.bat   # [win]
     build:
-      # string: py{{ ''.join(python.split('.')[0:2]) }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}{{ debug }}
       run_exports:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
       ignore_run_exports:
@@ -85,21 +67,19 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
-        # When making a debug build on Windows, we need to patch CMake downloaded pybind11. Sorry.
         - m2-patch  # [win]
         - m2-gcc-libs  # [win]
         - cmake
         - ninja
       host:
         - {{ pin_subpackage('liblief', exact=True) }}
-        # - python {{python}}* *{{variant}}
         - python
         - setuptools >=31.0.0
         - pip
         - wheel
+        - pybind11
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
-        # - python {{python}}* *{{variant}}
         - python
     test:
       requires:
@@ -111,7 +91,7 @@ outputs:
         - pip check
 
 about:
-  home: https://lief.quarkslab.com/
+  home: https://lief-project.github.io/
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
@@ -120,8 +100,7 @@ about:
     It turns out that many projects need to parse executable formats and they usually re-implement
     their own parser. Moreover these parsers are usually bound to one language.
     LIEF attempts to fill this void.
-  doc_url: https://lief.quarkslab.com/doc/stable/index.html
-  doc_source_url: https://github.com/lief-project/LIEF/tree/master/doc
+  doc_url: https://lief-project.github.io/doc/latest/
   dev_url: https://github.com/lief-project/LIEF
 
 extra:
