@@ -59,7 +59,7 @@ outputs:
         - scikit-build-core >=0.9.8
         - setuptools >=70.2.0 # [unix]
         # Required for msvc.msvc14_get_vc_env
-        - setuptools <=70.2  # [win]
+        - setuptools <=74  # [win]
         - tomli >=2.0.1
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
