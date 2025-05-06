@@ -16,15 +16,14 @@ requirements:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - ccache
-    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config            # [not win]
     - cmake
     - ninja
   host:
-    - nlohmann_json
-    - mbedtls
+    - nlohmann_json 3.11
+    - mbedtls 3.5
 
 outputs:
   - name: py-lief
@@ -33,12 +32,9 @@ outputs:
     build:
       run_exports:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
-      ignore_run_exports:
-        - python
     requirements:
       build:
         - ccache
-        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
@@ -46,23 +42,22 @@ outputs:
         - ninja
         - python                                 # [build_platform != target_platform]
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-        - pydantic >=2.4.2                       # [build_platform != target_platform]
-        - pydantic-core >=2.10.1                 # [build_platform != target_platform]
-        - scikit-build-core >=0.6.0              # [build_platform != target_platform]
-        - setuptools >=68.2.2                    # [build_platform != target_platform]
+        - pydantic >=2.8.2                       # [build_platform != target_platform]
+        - scikit-build-core >=0.9.8              # [build_platform != target_platform]
+        - setuptools >=70.2.0                    # [build_platform != target_platform]
         - tomli >=2.0.1                          # [build_platform != target_platform]
       host:
-        - nlohmann_json
+        - nlohmann_json 3.11
+        - nanobind 2.5.0
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
         - python
         - pip
         # Upstream pins build dependencies exactly; we are a bit more lenient
         # here to avoid potential solvability issues.
-        - pydantic >=2.4.2
-        - pydantic-core >=2.10.1
-        - scikit-build-core >=0.6.0
-        - setuptools >=68.2.2
+        - pydantic >=2.8.2
+        - scikit-build-core >=0.9.8
+        - setuptools >=70.2.0
         # Required for msvc.msvc14_get_vc_env
         - setuptools <=70.2  # [win]
         - tomli >=2.0.1
@@ -84,20 +79,17 @@ outputs:
     build:
       run_exports:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
         - ccache
-        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
         - cmake
         - ninja
       host:
-        - nlohmann_json
-        - mbedtls
+        - nlohmann_json 3.11
+        - mbedtls 3.5
     test:
       files:
         - tests
@@ -135,7 +127,7 @@ outputs:
         - ninja
 
 about:
-  home: https://lief-project.github.io/
+  home: https://lief.re/
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
@@ -145,8 +137,7 @@ about:
     their own parser. Moreover these parsers are usually bound to one language.
     LIEF attempts to fill this void.
   dev_url: https://github.com/lief-project/LIEF
-  doc_url: https://lief.quarkslab.com/doc/stable/index.html
-  doc_source_url: https://github.com/lief-project/LIEF/tree/master/doc
+  doc_url: https://lief.re/doc/latest/
 
 extra:
   recipe-maintainers:
