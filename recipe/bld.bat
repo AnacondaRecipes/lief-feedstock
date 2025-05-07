@@ -20,6 +20,9 @@ mkdir build
 ::   - https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4251
 ::   - https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4275
 cmake %CMAKE_ARGS% -LAH -G "Ninja" -B build  ^
+    -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%    ^
+    -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
+    -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_CXX_FLAGS="%CXXFLAGS% /nologo /EHsc /wd4251 /wd4275"  ^
     -DCMAKE_C_FLAGS="%CFLAGS% /nologo /EHsc /wd4251 /wd4275"  ^
     -DCMAKE_VERBOSE_MAKEFILE=ON  ^
