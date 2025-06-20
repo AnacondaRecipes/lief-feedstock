@@ -1,4 +1,4 @@
-{% set version = "0.16.4" %}
+{% set version = "0.16.6" %}
 
 package:
   name: lief
@@ -6,7 +6,7 @@ package:
 
 source:
   - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
-    sha256: 311fff5ea9ecbe57b8d02e68739b97673cb14763129ce53af3eac8fee6bf845e
+    sha256: 20bae0130c98d6b29a8a7853f6a0f270398b277f12c3673164b08563cbd18e0c
 
 build:
   number: 0
@@ -40,10 +40,10 @@ outputs:
         - ninja
         - python                                 # [build_platform != target_platform]
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-        - pydantic >=2.8.2                       # [build_platform != target_platform]
-        - scikit-build-core >=0.9.8              # [build_platform != target_platform]
+        - pydantic >=2.11.3                      # [build_platform != target_platform]
+        - scikit-build-core >=0.11.1             # [build_platform != target_platform]
         - setuptools >=70.2.0                    # [build_platform != target_platform]
-        - tomli >=2.0.1                          # [build_platform != target_platform]
+        - tomli >=2.2.1                          # [build_platform != target_platform]
       host:
         - nlohmann_json 3.11
         - nanobind 2.5.0 # [unix]
@@ -53,12 +53,12 @@ outputs:
         - pip
         # Upstream pins build dependencies exactly; we are a bit more lenient
         # here to avoid potential solvability issues.
-        - pydantic >=2.8.2
-        - scikit-build-core >=0.9.8
+        - pydantic >=2.11.3
+        - scikit-build-core >=0.11.1
         - setuptools >=70.2.0 # [unix]
         # Required for msvc.msvc14_get_vc_env
         - setuptools <=74  # [win]
-        - tomli >=2.0.1
+        - tomli >=2.2.1
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
         - python
