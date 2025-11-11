@@ -15,6 +15,7 @@ requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config            # [not win]
@@ -33,6 +34,7 @@ outputs:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
@@ -64,6 +66,7 @@ outputs:
         - python
     test:
       requires:
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
       imports:
         - lief
@@ -79,6 +82,7 @@ outputs:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
@@ -118,6 +122,7 @@ outputs:
 
         - popd
       requires:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
