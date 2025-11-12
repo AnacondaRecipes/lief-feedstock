@@ -9,12 +9,13 @@ source:
     sha256: 311fff5ea9ecbe57b8d02e68739b97673cb14763129ce53af3eac8fee6bf845e
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config            # [not win]
@@ -33,6 +34,7 @@ outputs:
         - {{ pin_subpackage('py-lief', max_pin='x.x') }}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
@@ -64,6 +66,7 @@ outputs:
         - python
     test:
       requires:
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
       imports:
         - lief
@@ -79,6 +82,7 @@ outputs:
         - {{ pin_subpackage('liblief', max_pin='x.x') }}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
@@ -118,6 +122,7 @@ outputs:
 
         - popd
       requires:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
