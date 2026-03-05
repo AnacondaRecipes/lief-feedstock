@@ -1,0 +1,100 @@
+From 8431c85a750de8f828a537981b9a292fea7d0a56 Mon Sep 17 00:00:00 2001
+From: Charles Bousseau <cbousseau@anaconda.com>
+Date: Thu, 5 Mar 2026 16:14:58 -0500
+Subject: [PATCH] Add TLSDESC_PLT and TLSDESC_GOT to ELF dynamic tags
+
+Adapted from: https://github.com/lief-project/LIEF/pull/1311
+---
+ api/c/include/LIEF/ELF/enums.h                | 2 ++
+ api/python/src/ELF/objects/pyDynamicEntry.cpp | 2 ++
+ api/rust/cargo/lief/src/elf/dynamic.rs        | 6 ++++++
+ include/LIEF/ELF/DynamicEntry.hpp             | 2 ++
+ src/ELF/DynamicEntry.cpp                      | 2 ++
+ 5 files changed, 14 insertions(+)
+
+diff --git a/api/c/include/LIEF/ELF/enums.h b/api/c/include/LIEF/ELF/enums.h
+index 960f64db..0a3954d0 100644
+--- a/api/c/include/LIEF/ELF/enums.h
++++ b/api/c/include/LIEF/ELF/enums.h
+@@ -702,6 +702,8 @@ enum LIEF_DYNAMIC_TAGS {
+   LIEF_DT_HIPROC                     = 0x7FFFFFFF, /**< End of processor specific tags. */
+ 
+   LIEF_DT_GNU_HASH                   = 0x6FFFFEF5, /**< Reference to the GNU hash table. */
++  LIEF_DT_TLSDESC_PLT                = 0x6FFFFEF6, /**< Location of PLT entry for TLS descriptor resolver calls. */
++  LIEF_DT_TLSDESC_GOT                = 0x6FFFFEF7, /**< Location of GOT entry for TLS descriptor resolver PLT entry. */
+   LIEF_DT_RELACOUNT                  = 0x6FFFFFF9, /**< ELF32_Rela count. */
+   LIEF_DT_RELCOUNT                   = 0x6FFFFFFA, /**< ELF32_Rel count. */
+ 
+diff --git a/api/python/src/ELF/objects/pyDynamicEntry.cpp b/api/python/src/ELF/objects/pyDynamicEntry.cpp
+index a3999f60..36f8aa4e 100644
+--- a/api/python/src/ELF/objects/pyDynamicEntry.cpp
++++ b/api/python/src/ELF/objects/pyDynamicEntry.cpp
+@@ -73,6 +73,8 @@ void create<DynamicEntry>(nb::module_& m) {
+     ENTRY(RELR)
+     ENTRY(RELRENT)
+     ENTRY(GNU_HASH)
++    ENTRY(TLSDESC_PLT)
++    ENTRY(TLSDESC_GOT)
+     ENTRY(RELACOUNT)
+     ENTRY(RELCOUNT)
+     ENTRY(FLAGS_1)
+diff --git a/api/rust/cargo/lief/src/elf/dynamic.rs b/api/rust/cargo/lief/src/elf/dynamic.rs
+index 48b5954f..a7106b51 100644
+--- a/api/rust/cargo/lief/src/elf/dynamic.rs
++++ b/api/rust/cargo/lief/src/elf/dynamic.rs
+@@ -49,6 +49,8 @@ pub enum Tag {
+     RELR,
+     RELRENT,
+     GNU_HASH,
++    TLSDESC_PLT,
++    TLSDESC_GOT,
+     RELACOUNT,
+     RELCOUNT,
+     FLAGS_1,
+@@ -208,6 +210,8 @@ impl From<u64> for Tag {
+             0x00000024 => Tag::RELR,
+             0x00000025 => Tag::RELRENT,
+             0x6ffffef5 => Tag::GNU_HASH,
++            0x6ffffef6 => Tag::TLSDESC_PLT,
++            0x6ffffef7 => Tag::TLSDESC_GOT,
+             0x6ffffff9 => Tag::RELACOUNT,
+             0x6ffffffa => Tag::RELCOUNT,
+             0x6ffffffb => Tag::FLAGS_1,
+@@ -370,6 +374,8 @@ impl From<Tag> for u64 {
+             Tag::RELR => 0x00000024,
+             Tag::RELRENT => 0x00000025,
+             Tag::GNU_HASH => 0x6ffffef5,
++            Tag::TLSDESC_PLT => 0x6ffffef6,
++            Tag::TLSDESC_GOT => 0x6ffffef7,
+             Tag::RELACOUNT => 0x6ffffff9,
+             Tag::RELCOUNT => 0x6ffffffa,
+             Tag::FLAGS_1 => 0x6ffffffb,
+diff --git a/include/LIEF/ELF/DynamicEntry.hpp b/include/LIEF/ELF/DynamicEntry.hpp
+index 43cb778a..34337fad 100644
+--- a/include/LIEF/ELF/DynamicEntry.hpp
++++ b/include/LIEF/ELF/DynamicEntry.hpp
+@@ -86,6 +86,8 @@ class LIEF_API DynamicEntry : public Object {
+ 
+     // GNU Extensions
+     GNU_HASH                   = 0x6FFFFEF5, /**< Reference to the GNU hash table. */
++    TLSDESC_PLT                = 0x6FFFFEF6, /**< Location of PLT entry for TLS descriptor resolver calls. */
++    TLSDESC_GOT                = 0x6FFFFEF7, /**< Location of GOT entry for TLS descriptor resolver PLT entry. */
+     RELACOUNT                  = 0x6FFFFFF9, /**< ELF32_Rela count. */
+     RELCOUNT                   = 0x6FFFFFFA, /**< ELF32_Rel count. */
+     FLAGS_1                    = 0x6FFFFFFB, /**< Flags_1. */
+diff --git a/src/ELF/DynamicEntry.cpp b/src/ELF/DynamicEntry.cpp
+index 38914cac..39811c25 100644
+--- a/src/ELF/DynamicEntry.cpp
++++ b/src/ELF/DynamicEntry.cpp
+@@ -219,6 +219,8 @@ const char* to_string(DynamicEntry::TAG tag) {
+     ENTRY(RELR),
+     ENTRY(RELRENT),
+     ENTRY(GNU_HASH),
++    ENTRY(TLSDESC_PLT),
++    ENTRY(TLSDESC_GOT),
+     ENTRY(RELACOUNT),
+     ENTRY(RELCOUNT),
+     ENTRY(FLAGS_1),
+-- 
+2.39.5 (Apple Git-154)
+

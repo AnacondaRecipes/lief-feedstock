@@ -7,9 +7,11 @@ package:
 source:
   - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
     sha256: cc1c8c563faaddf497d1a2d8f2712257f15e680e6a5ef4ea1e29ba8e19fb6248
+    patches:
+      - patches/0001-add-tlsdesc-plt-andtlsdesc-got-tags.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
