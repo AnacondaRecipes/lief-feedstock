@@ -1,0 +1,8 @@
+anaconda_config_version: 1
+upstream_sources:
+  - github:
+      identifier: lief-project/LIEF
+      use_max_tag: true
+    packages:
+      - py-lief
+      - liblief 
