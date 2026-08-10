@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/lief-project/LIEF/archive/refs/tags/{{ version }}.tar.gz
   sha256: 2cf412695ff739d82e129db441e5c2025f3bb4873a3d3a1d3dd4cf300b682abd
-  #patches:
-  #  - 0001-Upstream-mbedtls-4.x-moved-psa-crypto_builtin_-.h-mb.patch
 
 build:
   number: 0
@@ -23,6 +21,7 @@ requirements:
     - pkg-config            # [not win]
     - cmake
     - ninja-base
+    - git  # [win]
   host:
     - nlohmann_json 3.12.0
     - mbedtls =4.0.0
