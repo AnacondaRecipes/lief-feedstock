@@ -1,29 +1,29 @@
-{% set version = "0.17.5" %}
+{% set name = "lief" %}
+{% set version = "1.0.0" %}
 
 package:
-  name: lief
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/lief-project/LIEF/archive/{{ version }}.tar.gz
-    sha256: 9c15587967d92767573c829a8b5cfe0cd9732db0c07ae78d47dd5baa44f9ab6e
+  url: https://github.com/lief-project/LIEF/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 2cf412695ff739d82e129db441e5c2025f3bb4873a3d3a1d3dd4cf300b682abd
 
 build:
   number: 0
+  skip: true  # [py<39]
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config            # [not win]
     - cmake
-    - ninja
+    - ninja-base
   host:
-    - nlohmann_json 3.11
-    - mbedtls 3.5
+    - nlohmann_json 3.12.0
+    - mbedtls {{ mbedtls }}
 
 outputs:
   - name: py-lief
@@ -39,28 +39,22 @@ outputs:
         - {{ compiler('cxx') }}
         - pkg-config            # [not win]
         - cmake
-        - ninja
-        - python                                 # [build_platform != target_platform]
-        - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-        - pydantic >=2.8.2                       # [build_platform != target_platform]
-        - scikit-build-core >=0.9.8              # [build_platform != target_platform]
-        - setuptools >=70.2.0                    # [build_platform != target_platform]
-        - tomli >=2.0.1                          # [build_platform != target_platform]
+        - ninja-base
       host:
-        - nlohmann_json 3.11
+        - pip
+        - python
+        - nlohmann_json 3.12.0
         - nanobind 2.5.0 # [unix]
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
-        - python
-        - pip
         # Upstream pins build dependencies exactly; we are a bit more lenient
         # here to avoid potential solvability issues.
-        - pydantic >=2.8.2
-        - scikit-build-core >=0.9.8
-        - setuptools >=70.2.0 # [unix]
+        - pydantic >=2.13.4
+        - scikit-build-core >=1.0.3
+        - setuptools >=83.0.0 # [unix]
         # Required for msvc.msvc14_get_vc_env
         - setuptools <=74  # [win]
-        - tomli >=2.0.1
+        - tomli >=2.4.0
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
         - python
@@ -87,10 +81,10 @@ outputs:
         - {{ compiler('cxx') }}
         - pkg-config
         - cmake
-        - ninja
+        - ninja-base
       host:
-        - nlohmann_json 3.11
-        - mbedtls 3.5
+        - nlohmann_json 3.12.0
+        - mbedtls {{ mbedtls }}
     test:
       files:
         - tests
@@ -126,10 +120,10 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
-        - ninja
+        - ninja-base
 
 about:
-  home: https://lief.re/
+  home: https://lief.re
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
@@ -139,7 +133,7 @@ about:
     their own parser. Moreover these parsers are usually bound to one language.
     LIEF attempts to fill this void.
   dev_url: https://github.com/lief-project/LIEF
-  doc_url: https://lief.re/doc/latest/
+  doc_url: https://lief.re/doc/latest
 
 extra:
   recipe-maintainers:
