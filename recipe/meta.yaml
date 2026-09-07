@@ -50,12 +50,12 @@ outputs:
         - {{ pin_subpackage('liblief', exact=True) }}
         # Upstream pins build dependencies exactly; we are a bit more lenient
         # here to avoid potential solvability issues.
-        - pydantic >=2.13.4
-        - scikit-build-core >=1.0.3
-        - setuptools >=83.0.0 # [unix]
+        - pydantic >=2.8.2
+        - scikit-build-core >=0.9.8
+        - setuptools >=70.2.0 # [unix]
         # Required for msvc.msvc14_get_vc_env
         - setuptools <=74  # [win]
-        - tomli >=2.4.0
+        - tomli >=2.0.1
       run:
         - {{ pin_subpackage('liblief', exact=True) }}
         - python
