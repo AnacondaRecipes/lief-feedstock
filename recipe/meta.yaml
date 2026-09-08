@@ -124,7 +124,7 @@ outputs:
         - ninja-base
 
 about:
-  home: https://lief.re
+  home: https://lief-project.github.io/
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
@@ -134,7 +134,7 @@ about:
     their own parser. Moreover these parsers are usually bound to one language.
     LIEF attempts to fill this void.
   dev_url: https://github.com/lief-project/LIEF
-  doc_url: https://lief.re/doc/latest
+  doc_url: https://lief-project.github.io/doc/latest/
 
 extra:
   recipe-maintainers:
