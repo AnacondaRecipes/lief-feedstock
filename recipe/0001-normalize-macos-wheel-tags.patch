@@ -1,0 +1,13 @@
+diff --git a/api/python/backend/setup.py b/api/python/backend/setup.py
+--- a/api/python/backend/setup.py
++++ b/api/python/backend/setup.py
+@@ -74,6 +74,9 @@
+         deployment_target = os.getenv(
+             "MACOSX_DEPLOYMENT_TARGET", None
+         ) or sysconfig.get_config_var("MACOSX_DEPLOYMENT_TARGET")
++        # Wheel tags use only the major macOS version from macOS 11 onward.
++        if deployment_target and int(deployment_target.split(".")[0]) >= 11:
++            deployment_target = f"{deployment_target.split('.')[0]}.0"
+         os.environ["_PYTHON_HOST_PLATFORM"] = (
+             f"macosx-{deployment_target}-{config.osx_arch}"
+         )
