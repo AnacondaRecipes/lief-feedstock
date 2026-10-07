@@ -66,12 +66,18 @@ outputs:
         - pip >=24.2
         - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
+      files:
+        - tests/py-lief
       imports:
         - lief
       commands:
         - python -m pip check
+        # Print py-lief version and check it matches the recipe version
+        - python -c "import lief; print('PY-LIEF version:', lief.__version__); assert lief.__version__.startswith('{{ version }}'), lief.__version__"
         # Test general functionality by introspecting inter-subpackage linkage.
-        - python -c "import ctypes.util, lief; missing = {name for name in {s.name for s in lief.parse(lief._lief.__file__).imported_functions} - {s.name for s in lief.parse(ctypes.util.find_library('LIEF')).exported_functions} if '4LIEF' in name}; assert not missing, missing"
+        # Asserts the selection of imports from libLIEF is non-empty, then that
+        # all of them are exported by libLIEF.
+        - python tests/py-lief/test_linkage.py
 
   - name: liblief
     script: install-liblief.sh  # [unix]
