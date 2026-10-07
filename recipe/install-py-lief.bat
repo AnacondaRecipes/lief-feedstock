@@ -4,17 +4,25 @@ setlocal enabledelayedexpansion
 set LF=^
 
 
-set "CMAKE_ARGS=%CMAKE_ARGS% -DBUILD_STATIC_LIBS=OFF"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DBUILD_SHARED_LIBS=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_SKIP_RPATH=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_EXAMPLES=OFF"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_OPT_NLOHMANN_JSON_EXTERNAL=ON"
-@REM set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_OPT_NANOBIND_EXTERNAL=ON"
-@REM set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_EXTERNAL_NANOBINDS=ON"
+set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_OPT_NANOBIND_EXTERNAL=ON"
+
+:: Ask nanobind itself where its CMake package lives (host env Python), and use forward
+:: slashes so the path survives the TOML/CMake argument round trip unmangled.
+for /f "usebackq delims=" %%d in (`%PYTHON% -m nanobind --cmake_dir`) do set "NANOBIND_CMAKE_DIR=%%d"
+if not defined NANOBIND_CMAKE_DIR echo Could not determine nanobind CMake directory & exit /b 1
+echo nanobind CMake directory: %NANOBIND_CMAKE_DIR%
+dir "%NANOBIND_CMAKE_DIR%"
+if not exist "%NANOBIND_CMAKE_DIR%\nanobind-config.cmake" echo nanobind-config.cmake not found in %NANOBIND_CMAKE_DIR% & exit /b 1
+set "NANOBIND_CMAKE_DIR=%NANOBIND_CMAKE_DIR:\=/%"
+set "CMAKE_ARGS=%CMAKE_ARGS% -Dnanobind_DIR=%NANOBIND_CMAKE_DIR%"
+
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_PY_LIEF_EXT=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_PY_LIEF_EXT_SHARED=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_PYTHON_API=ON"
-
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_DISABLE_FROZEN=OFF"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS=OFF"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS="
