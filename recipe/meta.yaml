@@ -47,7 +47,9 @@ outputs:
         - pip
         - python
         - nlohmann_json 3.12.0
-        - nanobind 2.5.0 # [unix]
+        # Use nanobind version that upstream uses
+        # See: https://github.com/lief-project/LIEF/blob/main/api/python/CMakeLists.txt
+        - nanobind 2.13.0
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
         # Upstream pins build dependencies exactly; we are a bit more lenient
