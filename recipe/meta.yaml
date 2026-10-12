@@ -118,6 +118,7 @@ outputs:
         # That causes py-lief linking against fmt directly. Therefore, the following is required.
         - fmt {{ fmt }}
       run:
+        # "expected" is marked as internal use by the upstream, but due to unvendoring, it needs to be installed at runtime.
         - {{ pin_compatible('cpp-expected', max_pin='x.x') }}
     test:
       files:
@@ -146,6 +147,15 @@ outputs:
         # FIXME: Actual test disabled on Windows for now; LIEF::MachO::Parser::parse does not finish on Windows.
         - test-lief-macho macOS-libpython2.7.a-getbuildinfo.o > output.txt || exit 1  # [not win]
         - findstr has_dynamic_symbol_command output.txt && exit 1 || call;
+        - popd
+
+        # Tests find_package(LIEF) config and that unvendored libraries leaking through the public headers resolves.
+        # Builds a shared library and parses it with LIEF.
+        - pushd liblief
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="${PREFIX}" . || exit 1  # [not win]
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="%PREFIX%" . || exit 1  # [win]
+        - ninja || exit 1
+        - ctest --output-on-failure
         - popd
 
         - popd
