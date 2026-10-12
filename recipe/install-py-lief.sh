@@ -3,6 +3,7 @@
 set -xeuo pipefail
 
 CMAKE_ARGS="${CMAKE_ARGS} \
+  -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_SHARED_LIBS=ON \
   -DCMAKE_SKIP_RPATH=ON \
   -DLIEF_EXAMPLES=OFF \

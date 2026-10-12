@@ -1,10 +1,14 @@
 @echo ON
 setlocal enabledelayedexpansion
 
+set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%"
+set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%"
+set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_BUILD_TYPE=Release"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DBUILD_SHARED_LIBS=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_EXAMPLES=OFF"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_OPT_NLOHMANN_JSON_EXTERNAL=ON"
 set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_OPT_MBEDTLS_EXTERNAL=ON"
+set "CMAKE_ARGS=%CMAKE_ARGS% -DLIEF_PYTHON_API=OFF"
 @REM Python bindings are configured separately in install-py-lief.bat.
 
 mkdir build
@@ -14,9 +18,6 @@ mkdir build
 ::   - https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4251
 ::   - https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4275
 cmake %CMAKE_ARGS% -LAH -G "Ninja" -B build  ^
-    -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%    ^
-    -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-    -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_CXX_FLAGS="%CXXFLAGS% /nologo /EHsc /wd4251 /wd4275"  ^
     -DCMAKE_C_FLAGS="%CFLAGS% /nologo /EHsc /wd4251 /wd4275"  ^
     -DCMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS=OFF

@@ -3,6 +3,7 @@
 set -xeuo pipefail
 
 CMAKE_ARGS="${CMAKE_ARGS} \
+  -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_SHARED_LIBS=ON \
   -DCMAKE_SKIP_RPATH=ON \
   -DLIEF_EXAMPLES=OFF \
@@ -23,5 +24,4 @@ mkdir -p build
 # -L: list cache variables
 # -A: list advanced cache variables
 # -H: print help string of each cache variable
-cmake ${CMAKE_ARGS} -LAH -G "Ninja" -B build \
-  -DCMAKE_BUILD_TYPE=Release
+cmake ${CMAKE_ARGS} -LAH -G "Ninja" -B build
