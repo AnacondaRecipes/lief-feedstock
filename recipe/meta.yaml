@@ -113,6 +113,8 @@ outputs:
         # Additionally, libLIEF uses fmt internally. However, the fmt headers transiently included from the spdlog headers.
         # So, libLIEF links fmt directly, and the following is required.
         - fmt {{ fmt }}
+      run:
+        - {{ pin_compatible('cpp-expected', max_pin='x.x') }}
     test:
       files:
         - tests
@@ -149,8 +151,6 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja-base
-        # Required due to unvendoring of the "expected" library
-        - cpp-expected 1.3.1
 
 about:
   home: https://lief-project.github.io/
