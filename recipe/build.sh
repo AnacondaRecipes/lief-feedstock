@@ -9,9 +9,11 @@ CMAKE_ARGS="${CMAKE_ARGS} \
   -DLIEF_EXAMPLES=OFF \
   -DLIEF_OPT_NLOHMANN_JSON_EXTERNAL=ON \
   -DLIEF_OPT_MBEDTLS_EXTERNAL=ON \
+  -DLIEF_OPT_EXTERNAL_EXPECTED=ON \
+  -DLIEF_EXTERNAL_SPDLOG=ON \
   -DLIEF_PYTHON_API=OFF \
 "
-echo "Python bindings are configured separately in install-py-lief.sh."
+# Python bindings are configured separately in install-py-lief.sh.
 
 # Please keep this comment around. It may help if this problem reoccurs.
 # if [[ ${target_platform} =~ linux-* ]]; then

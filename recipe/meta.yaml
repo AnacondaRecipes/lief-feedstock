@@ -20,13 +20,16 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config            # [not win]
+    - pkg-config  # [not win]
     - cmake
     - ninja-base
-    - git  # [win]
+    - git
   host:
+    # Check upstream dependencies and pin correct versions
     - nlohmann_json 3.12.0
-    - mbedtls =4.0.0
+    - mbedtls 4.0.0
+    - cpp-expected 1.3.1
+    - spdlog 1.17.0
 
 outputs:
   - name: py-lief
@@ -46,10 +49,15 @@ outputs:
       host:
         - pip
         - python
+        # Check upstream dependencies and pin correct versions
         - nlohmann_json 3.12.0
-        # Use nanobind version that upstream uses
-        # See: https://github.com/lief-project/LIEF/blob/main/api/python/CMakeLists.txt
+        - cpp-expected 1.3.1
+        - spdlog 1.17.0
         - nanobind 2.13.0
+        # Upstream-provided spdlog includes an embedded header-only fmt library.
+        # Additionally, py-lief uses fmt internally. However, the fmt headers transiently included from the spdlog headers.
+        # So, py-lief links fmt directly, and the following is required.
+        - fmt {{ fmt }}
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
         # Upstream pins build dependencies exactly; we are a bit more lenient
@@ -96,8 +104,15 @@ outputs:
         - cmake
         - ninja-base
       host:
+        # Check upstream dependencies and pin correct versions
         - nlohmann_json 3.12.0
-        - mbedtls =4.0.0
+        - mbedtls 4.0.0
+        - cpp-expected 1.3.1
+        - spdlog 1.17.0
+        # Upstream-provided spdlog includes an embedded header-only fmt library.
+        # Additionally, libLIEF uses fmt internally. However, the fmt headers transiently included from the spdlog headers.
+        # So, libLIEF links fmt directly, and the following is required.
+        - fmt {{ fmt }}
     test:
       files:
         - tests
@@ -134,6 +149,8 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja-base
+        # Required due to unvendoring of the "expected" library
+        - cpp-expected 1.3.1
 
 about:
   home: https://lief-project.github.io/
