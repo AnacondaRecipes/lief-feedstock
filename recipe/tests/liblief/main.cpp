@@ -13,6 +13,11 @@
 
 #include <LIEF/LIEF.hpp>
 
+// Print the numeric LIEF error code
+static uint32_t error_code(lief_errors err) {
+  return static_cast<uint32_t>(err);
+}
+
 int main(int argc, char** argv) {
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <elf|pe|macho>\n";
@@ -36,7 +41,7 @@ int main(int argc, char** argv) {
     std::cout << "VA of offset 0: 0x" << std::hex << *va << std::dec << "\n";
   } else {
     // tl::expected::error() returns lief_errors
-    std::cout << "offset_to_virtual_address failed: " << to_string(va.error()) << "\n";
+    std::cout << "offset_to_virtual_address failed: error " << error_code(va.error()) << "\n";
   }
 
   // value_or() is a tl::expected member. A missing symbol yields the fallback.
@@ -46,13 +51,13 @@ int main(int argc, char** argv) {
   // ok_error_t == result<ok_t>
   LIEF::ok_error_t status = LIEF::ok();
   if (LIEF::is_err(status)) {
-    std::cerr << to_string(status.error()) << "\n";
+    std::cerr << "error " << error_code(status.error()) << "\n";
     return 1;
   }
 
   // Creating an error yourself returns tl::unexpected<lief_errors>
   LIEF::result<uint64_t> failed = make_error_code(lief_errors::not_found);
-  std::cout << "forced err:  " << to_string(failed.error()) << "\n";
+  std::cout << "forced err:  " << error_code(failed.error()) << "\n";
 
   return 0;
 }
