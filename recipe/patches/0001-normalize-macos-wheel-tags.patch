@@ -1,0 +1,28 @@
+From: Jannis Leidel <jannis@leidel.info>
+Subject: [PATCH] Normalize macOS wheel tags
+
+Normalize the macOS deployment target used for the wheel platform tag.
+
+Starting with macOS 11, wheel platform tags only carry the major version
+(e.g. macosx_11_0_arm64, macosx_12_0_arm64). A deployment target such as
+"11.3" or "12.1", coming from MACOSX_DEPLOYMENT_TARGET or from sysconfig,
+would otherwise produce a tag like "macosx-11.3-arm64" via
+_PYTHON_HOST_PLATFORM, which does not match what pip and packaging expect
+and can yield a wheel that is not installable on the intended systems.
+
+Clamp the minor version to ".0" for deployment targets >= 11, and leave
+10.x targets (where the minor version is significant) untouched.
+
+diff --git a/api/python/backend/setup.py b/api/python/backend/setup.py
+--- a/api/python/backend/setup.py
++++ b/api/python/backend/setup.py
+@@ -74,6 +74,9 @@
+         deployment_target = os.getenv(
+             "MACOSX_DEPLOYMENT_TARGET", None
+         ) or sysconfig.get_config_var("MACOSX_DEPLOYMENT_TARGET")
++        # Wheel tags use only the major macOS version from macOS 11 onward.
++        if deployment_target and int(deployment_target.split(".")[0]) >= 11:
++            deployment_target = f"{deployment_target.split('.')[0]}.0"
+         os.environ["_PYTHON_HOST_PLATFORM"] = (
+             f"macosx-{deployment_target}-{config.osx_arch}"
+         )

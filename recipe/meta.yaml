@@ -9,10 +9,11 @@ source:
   url: https://github.com/lief-project/LIEF/archive/refs/tags/{{ version }}.tar.gz
   sha256: 2cf412695ff739d82e129db441e5c2025f3bb4873a3d3a1d3dd4cf300b682abd
   patches:
-    - 0001-normalize-macos-wheel-tags.patch
+    - patches/0001-normalize-macos-wheel-tags.patch
+    - patches/0002-find-tl-expected-for-shared-builds.patch
 
 build:
-  number: 1
+  number: 2
   skip: true  # [py<39]
 
 requirements:
@@ -20,13 +21,16 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - pkg-config            # [not win]
+    - pkg-config  # [not win]
     - cmake
     - ninja-base
-    - git  # [win]
+    - git
   host:
-    - nlohmann_json 3.12.0
-    - mbedtls =4.0.0
+    # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+    - nlohmann_json {{ nlohmann_json }}
+    - mbedtls {{ mbedtls }}
+    - cpp-expected {{ cpp_expected }}
+    - spdlog {{ spdlog }}
 
 outputs:
   - name: py-lief
@@ -46,8 +50,17 @@ outputs:
       host:
         - pip
         - python
-        - nlohmann_json 3.12.0
-        - nanobind 2.5.0 # [unix]
+        # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+        - nlohmann_json {{ nlohmann_json }}
+        - cpp-expected {{ cpp_expected }}
+        - spdlog {{ spdlog }}
+        - nanobind {{ nanobind }}
+        # Upstream-provided spdlog includes an embedded header-only fmt library.
+        # See <source-dir>/third_part/spdlog-*.zip
+        # Anaconda's spdlog unvendors fmt, see aggregate's cbc.yaml.
+        # However, py-lief uses fmt internally regardless of spdlog unvendoring and the fmt headers transiently included from the spdlog headers.
+        # That causes py-lief linking against fmt directly. Therefore, we should link py-lief against the fmt version spdlog is linked against.
+        - fmt {{ fmt }}
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
         # Upstream pins build dependencies exactly; we are a bit more lenient
@@ -66,12 +79,18 @@ outputs:
         - pip >=24.2
         - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
+      files:
+        - tests/py-lief
       imports:
         - lief
       commands:
         - python -m pip check
+        # Print py-lief version and check it matches the recipe version
+        - python -c "import lief; print('PY-LIEF version:', lief.__version__); assert lief.__version__.startswith('{{ version }}'), lief.__version__"
         # Test general functionality by introspecting inter-subpackage linkage.
-        - python -c "import ctypes.util, lief; missing = {name for name in {s.name for s in lief.parse(lief._lief.__file__).imported_functions} - {s.name for s in lief.parse(ctypes.util.find_library('LIEF')).exported_functions} if '4LIEF' in name}; assert not missing, missing"
+        # Asserts the selection of imports from libLIEF is non-empty, then that
+        # all of them are exported by libLIEF.
+        - python tests/py-lief/test_linkage.py
 
   - name: liblief
     script: install-liblief.sh  # [unix]
@@ -88,8 +107,20 @@ outputs:
         - cmake
         - ninja-base
       host:
-        - nlohmann_json 3.12.0
-        - mbedtls =4.0.0
+        # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+        - nlohmann_json {{ nlohmann_json }}
+        - mbedtls {{ mbedtls }}
+        - cpp-expected {{ cpp_expected }}
+        - spdlog {{ spdlog }}
+        # Upstream-provided spdlog includes an embedded header-only fmt library.
+        # See <source-dir>/third_part/spdlog-*.zip
+        # Anaconda's spdlog unvendors fmt, see aggregate's cbc.yaml.
+        # However, libLIEF uses fmt internally regardless of spdlog unvendoring and the fmt headers transiently included from the spdlog headers.
+        # That causes libLIEF linking against fmt directly. Therefore, we should link libLIEF against the fmt version spdlog is linked against.
+        - fmt {{ fmt }}
+      run:
+        # "expected" is required at runtime due to unvendoring
+        - {{ pin_compatible('cpp-expected', max_pin='x.x') }}
     test:
       files:
         - tests
@@ -117,6 +148,17 @@ outputs:
         # FIXME: Actual test disabled on Windows for now; LIEF::MachO::Parser::parse does not finish on Windows.
         - test-lief-macho macOS-libpython2.7.a-getbuildinfo.o > output.txt || exit 1  # [not win]
         - findstr has_dynamic_symbol_command output.txt && exit 1 || call;
+        - popd
+
+        # Tests find_package(LIEF) config and that unvendored libraries leaking through the public headers resolves.
+        # Builds a shared library and parses it with LIEF.
+        - pushd liblief
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="${PREFIX}" . || exit 1  # [not win]
+        # Release on Windows: LIEF.dll is built Release, and a Debug app (_ITERATOR_DEBUG_LEVEL=2) has a different std::string layout,
+        # so strings passed across the DLL boundary arrive empty.
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%PREFIX%" . || exit 1  # [win]
+        - ninja || exit 1
+        - ctest --output-on-failure
         - popd
 
         - popd
