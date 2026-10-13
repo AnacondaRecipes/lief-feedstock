@@ -26,11 +26,11 @@ requirements:
     - ninja-base
     - git
   host:
-    # Check upstream dependencies and pin correct versions
-    - nlohmann_json 3.12.0
-    - mbedtls 4.0.0
-    - cpp-expected 1.3.1
-    - spdlog 1.17.0
+    # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+    - nlohmann_json {{ nlohmann_json }}
+    - mbedtls {{ mbedtls }}
+    - cpp-expected {{ cpp_expected }}
+    - spdlog {{ spdlog }}
 
 outputs:
   - name: py-lief
@@ -50,16 +50,16 @@ outputs:
       host:
         - pip
         - python
-        # Check upstream dependencies and pin correct versions
-        - nlohmann_json 3.12.0
-        - cpp-expected 1.3.1
-        - spdlog 1.17.0
-        - nanobind 2.13.0
+        # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+        - nlohmann_json {{ nlohmann_json }}
+        - cpp-expected {{ cpp_expected }}
+        - spdlog {{ spdlog }}
+        - nanobind {{ nanobind }}
         # Upstream-provided spdlog includes an embedded header-only fmt library.
         # See <source-dir>/third_part/spdlog-*.zip
-        # Anaconda's spdlog unvendors fmt.
+        # Anaconda's spdlog unvendors fmt, see aggregate's cbc.yaml.
         # However, py-lief uses fmt internally regardless of spdlog unvendoring and the fmt headers transiently included from the spdlog headers.
-        # That causes py-lief linking against fmt directly. Therefore, the following is required.
+        # That causes py-lief linking against fmt directly. Therefore, we should link py-lief against the fmt version spdlog is linked against.
         - fmt {{ fmt }}
         # Dynamically linked to libLIEF for now; see comment in patch section.
         - {{ pin_subpackage('liblief', exact=True) }}
@@ -107,19 +107,19 @@ outputs:
         - cmake
         - ninja-base
       host:
-        # Check upstream dependencies and pin correct versions
-        - nlohmann_json 3.12.0
-        - mbedtls 4.0.0
-        - cpp-expected 1.3.1
-        - spdlog 1.17.0
+        # Check upstream dependencies and pin correct versions (see local cbc.yaml)
+        - nlohmann_json {{ nlohmann_json }}
+        - mbedtls {{ mbedtls }}
+        - cpp-expected {{ cpp_expected }}
+        - spdlog {{ spdlog }}
         # Upstream-provided spdlog includes an embedded header-only fmt library.
         # See <source-dir>/third_part/spdlog-*.zip
-        # Anaconda's spdlog unvendors fmt.
-        # However, py-lief uses fmt internally regardless of spdlog unvendoring and the fmt headers transiently included from the spdlog headers.
-        # That causes py-lief linking against fmt directly. Therefore, the following is required.
+        # Anaconda's spdlog unvendors fmt, see aggregate's cbc.yaml.
+        # However, libLIEF uses fmt internally regardless of spdlog unvendoring and the fmt headers transiently included from the spdlog headers.
+        # That causes libLIEF linking against fmt directly. Therefore, we should link libLIEF against the fmt version spdlog is linked against.
         - fmt {{ fmt }}
       run:
-        # "expected" is marked as internal use by the upstream, but due to unvendoring, it needs to be installed at runtime.
+        # "expected" is required at runtime due to unvendoring
         - {{ pin_compatible('cpp-expected', max_pin='x.x') }}
     test:
       files:

@@ -1,0 +1,12 @@
+# Dependency version pins defined by the upstream.
+# These might be different from aggregate's version pins. See '<src-dir>/third-party' directory for more details.
+nlohmann_json:
+  - 3.12.0
+mbedtls:
+  - 4.0.0
+cpp_expected:
+  - 1.3.1
+spdlog:
+  - 1.17.0
+nanobind:
+  - 2.13.0
