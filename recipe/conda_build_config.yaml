@@ -6,7 +6,11 @@ mbedtls:
   - 4.0.0
 cpp_expected:
   - 1.3.1
+# Upstream defines a strict spdlog version, but spdlog devs claim that they have a stable interface.
+# See: https://github.com/gabime/spdlog/discussions/2741
+# Therefore, the version pin can be relaxed.
+# This is the same as aggregate's cbc.yaml (as of Oct 2026). Let's keep it here as well for future compatibility.
 spdlog:
-  - 1.17.0
+  - 1
 nanobind:
   - 2.13.0
