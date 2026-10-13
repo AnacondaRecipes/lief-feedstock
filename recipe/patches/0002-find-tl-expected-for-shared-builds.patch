@@ -1,0 +1,52 @@
+From: Onur R. Bingol <obingol@anaconda.com>
+Subject: [PATCH] Find tl-expected for shared LIEF builds in LIEFConfig.cmake
+
+When LIEF is built against an external tl-expected (LIEF_OPT_EXTERNAL_EXPECTED),
+tl::expected is a PUBLIC link dependency of LIEF::LIEF. It therefore shows up in
+INTERFACE_LINK_LIBRARIES of both LIEFExport-static.cmake and
+LIEFExport-shared.cmake.
+
+LIEFConfig.cmake only called find_dependency(tl-expected) inside the static
+branch of LIEF_load_targets(). For a shared build nothing loaded the
+tl-expected package, so find_package(LIEF) failed at generate time with:
+
+  The link interface of target "LIEF::LIEF" contains: tl::expected
+  but the target was not found.
+
+The find_path() fallback that followed only appended an include directory to
+LIEF::LIEF and never created the tl::expected target, so it could not satisfy
+the link interface. Replace it with find_dependency(tl-expected), which
+provides both the target and its include directories. find_package() returns
+early when the package was already found, so this is a no-op for static builds.
+
+Vendored builds (LIEF_EXTERNAL_EXPECTED=0) are unaffected: the headers ship
+with LIEF and the block is skipped.
+
+diff --git a/cmake/LIEFConfig.cmake.in b/cmake/LIEFConfig.cmake.in
+index a819c4f1..39346443 100644
+--- a/cmake/LIEFConfig.cmake.in
++++ b/cmake/LIEFConfig.cmake.in
+@@ -142,16 +142,14 @@ endif()
+ # their own CMake config that would otherwise be found using `find_dependency`
+ # Header-only library can be found relatively easily
+ 
++# tl::expected is a PUBLIC link dependency of LIEF::LIEF (see the top-level
++# CMakeLists.txt), so it also appears in the INTERFACE_LINK_LIBRARIES of the
++# shared export. The static branch of LIEF_load_targets() already looks it up,
++# but the shared branch does not, hence the lookup here. find_package() returns
++# early if the package was already found, so this is a no-op for static builds.
+ if(@LIEF_EXTERNAL_EXPECTED@)
+-  find_path(TL_EXPECTED_INCLUDE_DIR tl/expected.hpp)
+-  if(NOT TL_EXPECTED_INCLUDE_DIR)
+-    set(LIEF_NOT_FOUND_MESSAGE "Could not find include directory with 'tl/expected.hpp'. Consider setting `TL_EXPECTED_INCLUDE_DIR` during CMake configuration")
+-    set(LIEF_FOUND FALSE)
+-    return()
+-  endif()
+-  set_property(TARGET LIEF::LIEF APPEND PROPERTY
+-    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${TL_EXPECTED_INCLUDE_DIR}"
+-  )
++  include(CMakeFindDependencyMacro)
++  find_dependency(tl-expected)
+ endif()
+ 
+ if(@LIEF_EXTERNAL_SPAN@)
