@@ -154,7 +154,9 @@ outputs:
         # Builds a shared library and parses it with LIEF.
         - pushd liblief
         - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="${PREFIX}" . || exit 1  # [not win]
-        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="%PREFIX%" . || exit 1  # [win]
+        # Release on Windows: LIEF.dll is built Release, and a Debug app (_ITERATOR_DEBUG_LEVEL=2) has a different std::string layout,
+        # so strings passed across the DLL boundary arrive empty.
+        - cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%PREFIX%" . || exit 1  # [win]
         - ninja || exit 1
         - ctest --output-on-failure
         - popd
